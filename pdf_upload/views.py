@@ -18,11 +18,11 @@ def upload_pdf(request):
                 return render(request, 'pdf_upload/upload.html', {'form': form})
             
             try:
-                # Salva o arquivo no modelo
                 pdf_file = form.save(commit=False)
+                digits = form.cleaned_data['digits']
                 
-                # Chama a função unlock_pdf com o arquivo enviado (não com o caminho)
-                result = unlock_pdf(request.FILES['file'])
+                # Chama a função unlock_pdf com o arquivo e número de dígitos
+                result = unlock_pdf(request.FILES['file'], digits)
                 
                 # Atualiza o modelo com os resultados
                 pdf_file.processed_at = timezone.now()
@@ -41,9 +41,10 @@ def upload_pdf(request):
                 pdf_file.save()
                 
                 # Mensagem para o usuário
+                # Na view, após processar o resultado:
                 if result['status'] == 'success':
                     if result.get('password'):
-                        messages.success(request, result['message'])  # Exibe a mensagem com a senha
+                        messages.success(request, f"PDF desbloqueado! Senha de {result['digits']} dígitos: {result['password']}")
                     else:
                         messages.success(request, result['message'])
                 else:

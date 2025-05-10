@@ -8,9 +8,11 @@ custom_storage = FileSystemStorage(
     base_url='/media/'
 )
 
+
 class PDFFile(models.Model):
-    file = models.FileField(upload_to='locked_pdfs/', storage=custom_storage)
-    unlocked_file = models.FileField(upload_to='unlocked_pdfs/', storage=custom_storage, null=True, blank=True)
+    file = models.FileField(upload_to='locked_pdfs/')
+    unlocked_file = models.FileField(upload_to='unlocked_pdfs/', null=True, blank=True)
+    digits = models.PositiveSmallIntegerField(default=4)  # Novo campo
     uploaded_at = models.DateTimeField(auto_now_add=True)
     processed_at = models.DateTimeField(null=True, blank=True)
     is_success = models.BooleanField(default=False)
@@ -20,7 +22,4 @@ class PDFFile(models.Model):
     message = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return os.path.basename(self.file.name)
-
-    def filename(self):
-        return os.path.basename(self.file.name)
+        return self.file.name

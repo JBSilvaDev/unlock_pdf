@@ -8,29 +8,30 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def unlock_pdf(uploaded_file):
+def unlock_pdf(uploaded_file, digits=4):
     """
-    Tenta desbloquear um PDF com senha numérica de até 5 dígitos
+    Tenta desbloquear um PDF com senha numérica de 1 a 6 dígitos
     """
     start_time = time.time()
+    max_attempts = 10 ** digits  # Calcula o máximo de tentativas baseado nos dígitos
+    
     result = {
         'status': 'error',
         'password': None,
-        'message': 'Erro desconhecido',
+        'message': f'Testando senhas de {digits} dígitos...',
         'execution_time': 0,
         'attempts': 0,
         'output_path': None,
-        'original_filename': uploaded_file.name
+        'original_filename': uploaded_file.name,
+        'digits': digits
     }
     
     try:
-        # Cria arquivo temporário
         with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
             for chunk in uploaded_file.chunks():
                 tmp_file.write(chunk)
             tmp_path = tmp_file.name
         
-        # Processa o PDF
         with open(tmp_path, 'rb') as pdf_file:
             reader = PyPDF2.PdfReader(pdf_file)
             
@@ -42,28 +43,53 @@ def unlock_pdf(uploaded_file):
                 })
                 return result
                 
-            for senha in range(100000):
-                senha_tentativa = f"{senha:05d}"
+            # Tenta senhas de 0 até 10^digits - 1
+            for senha in range(max_attempts):
+                senha_tentativa = f"{senha:0{digits}d}"  # Formata com zeros à esquerda
+                
                 try:
                     if reader.decrypt(senha_tentativa):
-                        # Sucesso - atualiza o resultado
+                        # Sucesso - gera arquivo desbloqueado
+                        output_path = os.path.join(
+                            settings.MEDIA_ROOT,
+                            'unlocked_pdfs',
+                            f'unlocked_{uploaded_file.name}'
+                        )
+                        
+                        writer = PyPDF2.PdfWriter()
+                        for pagina in reader.pages:
+                            writer.add_page(pagina)
+                            
+                        with open(output_path, 'wb') as output_file:
+                            writer.write(output_file)
+                        
                         result.update({
                             'status': 'success',
                             'password': senha_tentativa,
-                            'message': f'PDF desbloqueado! Senha: {senha_tentativa}',
+                            'message': f'PDF desbloqueado! Senha ({digits} dígitos): {senha_tentativa}',
                             'execution_time': time.time() - start_time,
-                            'attempts': senha + 1
+                            'attempts': senha + 1,
+                            'output_path': output_path
                         })
                         return result
                         
                 except Exception as e:
-                    # Ignora erros de senha individual e continua
                     continue
                 
+                # Feedback a cada 1000 tentativas
+                if senha % 1000 == 0 and senha != 0:
+                    logger.info(f"Testando... {senha} tentativas realizadas")
+            
+            # Senha não encontrada
+            result.update({
+                'message': f'Senha de {digits} dígitos não encontrada.',
+                'execution_time': time.time() - start_time,
+                'attempts': max_attempts
+            })
+            
     except Exception as e:
         result['message'] = f"Erro ao processar o PDF: {str(e)}"
     finally:
-        # Limpeza do arquivo temporário
         try:
             os.unlink(tmp_path)
         except:
