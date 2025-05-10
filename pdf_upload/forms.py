@@ -9,7 +9,8 @@ class PDFUploadForm(forms.ModelForm):
         initial=4,
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Digite o número de dígitos (1-6)'
+            'placeholder': '(1-6)',
+            'style': 'width: 30px;'
         })
     )
     
