@@ -1,1 +1,1 @@
-web: gunicorn pdf_upload.wsgi
+web: gunicorn unlock_pdf.wsgi
