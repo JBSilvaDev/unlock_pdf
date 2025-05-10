@@ -41,7 +41,6 @@ def upload_pdf(request):
                 pdf_file.save()
                 
                 # Mensagem para o usuário
-                # Na view, após processar o resultado:
                 if result['status'] == 'success':
                     if result.get('password'):
                         messages.success(request, f"PDF desbloqueado! Senha de {result['digits']} dígitos: {result['password']}")
