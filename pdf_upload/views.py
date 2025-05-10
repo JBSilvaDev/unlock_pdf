@@ -41,13 +41,13 @@ def upload_pdf(request):
                 pdf_file.save()
                 
                 # Mensagem para o usuário
-                if pdf_file.is_success:
-                    if pdf_file.password:
-                        messages.success(request, f"PDF desbloqueado! Senha: {pdf_file.password}")
+                if result['status'] == 'success':
+                    if result.get('password'):
+                        messages.success(request, result['message'])  # Exibe a mensagem com a senha
                     else:
-                        messages.success(request, "O PDF não estava protegido por senha.")
+                        messages.success(request, result['message'])
                 else:
-                    messages.warning(request, pdf_file.message)
+                    messages.error(request, result['message'])
                 
                 return render(request, 'pdf_upload/upload.html', {
                     'form': PDFUploadForm(),  # Limpa o formulário

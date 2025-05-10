@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unlock PDF - Upload</title>
     <style>
+            .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
+    .success {
+        color: #3c763d;
+        background-color: #dff0d8;
+        border-color: #d6e9c6;
+    }
+    .error {
+        color: #a94442;
+        background-color: #f2dede;
+        border-color: #ebccd1;
+    }
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -90,17 +106,17 @@
         <p>Envie seu arquivo PDF protegido por senha numérica</p>
         
         <!-- Mensagens -->
-        {% if messages %}
-            {% for message in messages %}
-                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags %}{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
         
-        <form class="upload-form" method="post" enctype="multipart/form-data">
+<form class="upload-form" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.file }}
+    <input type="file" name="file" accept=".pdf" required>
     <button type="submit" class="upload-btn">Enviar PDF</button>
 </form>
         
