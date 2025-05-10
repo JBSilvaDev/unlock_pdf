@@ -1,1 +1,0 @@
-web: gunicorn unlock_pdf.wsgi
