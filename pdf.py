@@ -2,22 +2,22 @@ import PyPDF2
 import time
 
 def unlock_pdf(pdf_path, output_path):
-    # Tenta todas as combinações numéricas de 0000 a 9999
+    
     for senha in range(100000):
         try:
-            # Formata a senha com 4 dígitos (preenche com zeros à esquerda)
+            
             senha_tentativa = f"{senha:05d}"
             
             with open(pdf_path, 'rb') as pdf_file:
                 leitor = PyPDF2.PdfReader(pdf_file)
                 
-                # Verifica se o PDF está criptografado
+                
                 if leitor.is_encrypted:
-                    # Tenta descriptografar com a senha atual
+                    
                     if leitor.decrypt(senha_tentativa):
                         print(f"\nSenha encontrada: {senha_tentativa}")
                         
-                        # Cria uma cópia do PDF desbloqueado
+                        
                         escritor = PyPDF2.PdfWriter()
                         for pagina in leitor.pages:
                             escritor.add_page(pagina)
@@ -36,7 +36,7 @@ def unlock_pdf(pdf_path, output_path):
             print(f"Erro ao processar: {e}")
             continue
             
-        # Exibe progresso a cada 1000 tentativas
+        
         if senha % 1000 == 0 and senha != 0:
             print(f"Testando... {senha} tentativas realizadas")
     

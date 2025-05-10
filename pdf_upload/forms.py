@@ -6,12 +6,8 @@ class PDFUploadForm(forms.ModelForm):
         model = PDFFile
         fields = ('file',)
         widgets = {
-            'file': forms.FileInput(attrs={'accept': '.pdf'}),
+            'file': forms.FileInput(attrs={
+                'accept': '.pdf',
+                'required': True
+            }),
         }
-    
-    def clean_file(self):
-        file = self.cleaned_data.get('file')
-        if file:
-            if not file.name.endswith('.pdf'):
-                raise forms.ValidationError("Apenas arquivos PDF são permitidos.")
-        return file

@@ -10,9 +10,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             background-color: #f5f5f5;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .upload-container {
             background: white;
@@ -20,7 +22,8 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            width: 400px;
+            width: 100%;
+            max-width: 600px;
         }
         .upload-form {
             margin-top: 1rem;
@@ -37,18 +40,98 @@
         .upload-btn:hover {
             background-color: #45a049;
         }
+        .result-container {
+            margin-top: 2rem;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: left;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        .warning {
+            background-color: #fcf8e3;
+            color: #8a6d3b;
+        }
+        .pdf-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #337ab7;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .pdf-link:hover {
+            background-color: #286090;
+        }
+        .result-details {
+            margin-top: 15px;
+        }
+        .result-details p {
+            margin: 5px 0;
+        }
     </style>
 </head>
 <body>
     <div class="upload-container">
         <h1>Unlock PDF</h1>
-        <p>Envie seu arquivo PDF</p>
+        <p>Envie seu arquivo PDF protegido por senha numérica</p>
+        
+        <!-- Mensagens -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
         
         <form class="upload-form" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.file }}
-            <button type="submit" class="upload-btn">Enviar PDF</button>
-        </form>
+    {% csrf_token %}
+    {{ form.file }}
+    <button type="submit" class="upload-btn">Enviar PDF</button>
+</form>
+        
+        <!-- Resultado -->
+        {% if result %}
+        <div class="result-container">
+            <h3>Resultado do Processamento:</h3>
+            
+            {% if pdf_file.is_success %}
+                {% if pdf_file.password %}
+                    <p><strong>Senha encontrada:</strong> {{ pdf_file.password }}</p>
+                {% else %}
+                    <p>O PDF não estava protegido por senha.</p>
+                {% endif %}
+                
+                {% if pdf_file.unlocked_file %}
+                    <a href="{{ pdf_file.unlocked_file.url }}" class="pdf-link" target="_blank">
+                        Baixar PDF Desbloqueado
+                    </a>
+                {% endif %}
+            {% else %}
+                <p>{{ pdf_file.message }}</p>
+            {% endif %}
+            
+            <div class="result-details">
+                <p><strong>Tentativas:</strong> {{ pdf_file.attempts|default:"0" }}</p>
+                <p><strong>Tempo de execução:</strong> {{ pdf_file.execution_time|floatformat:2 }} segundos</p>
+                <p><strong>Arquivo original:</strong> {{ pdf_file.filename }}</p>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </body>
 </html>
