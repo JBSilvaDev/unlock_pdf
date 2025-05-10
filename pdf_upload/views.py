@@ -1,13 +1,20 @@
 from django.shortcuts import render, redirect
-from .models import PDFFile
 from .forms import PDFUploadForm
 from .utils import unlock_pdf, validate_pdf
 from django.contrib import messages
 from django.utils import timezone
 import os
 from django.conf import settings
+from django.shortcuts import redirect
+from django.views.decorators.http import require_http_methods
 
+
+@require_http_methods(["GET", "POST"])
 def upload_pdf(request):
+
+    if 'processed_data' in request.session:
+        del request.session['processed_data']
+        
     if request.method == 'POST':
         form = PDFUploadForm(request.POST, request.FILES)
         if form.is_valid():
@@ -59,7 +66,7 @@ def upload_pdf(request):
                 messages.error(request, f"Erro ao processar o PDF: {str(e)}")
                 return render(request, 'pdf_upload/upload.html', {
                     'form': form,
-                    'result': None
+                    'result': request.session.pop('processed_data', None)
                 })
     else:
         form = PDFUploadForm()

@@ -6,6 +6,7 @@ class PDFUploadForm(forms.ModelForm):
         label='Número de dígitos da senha',
         min_value=1,
         max_value=6,
+        initial=4,
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
             'placeholder': '1-6',

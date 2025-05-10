@@ -9,6 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 def unlock_pdf(uploaded_file, digits=4):
+    
     """
     Tenta desbloquear um PDF com senha numérica de 1 a 6 dígitos
     """

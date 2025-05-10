@@ -6,159 +6,191 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unlock PDF - Upload</title>
-    <!-- <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon"> -->
+    <style>
+        /* SEUS ESTILOS ORIGINAIS (MANTIDOS EXATAMENTE IGUAIS) */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-        background-color: #f5f5f5;
-        padding: 20px;
-        box-sizing: border-box;
-    }
+        .upload-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+        }
 
-    .upload-container {
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        width: 100%;
-        max-width: 600px;
-    }
+        .upload-form {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            margin-top: 1rem;
+        }
 
-    .upload-form {
-        width: 100%;
-        max-width: 800px;
-        margin: 0 auto;
-        margin-top: 1rem;
-    }
+        .form-group {
+            margin-bottom: 15px;
+        }
 
-    .form-group {
-        margin-bottom: 15px;
-    }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
 
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-    }
+        #id_file,
+        #id_digits {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
 
-    #id_file,
-    #id_digits {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-    }
+        .upload-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+        }
 
-    .upload-btn {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-        display: block;
-        width: 100%;
-        margin-top: 20px;
-    }
+        .upload-btn:hover {
+            background-color: #45a049;
+        }
 
-    .upload-btn:hover {
-        background-color: #45a049;
-    }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
 
-    .alert {
-        padding: 15px;
-        margin-bottom: 20px;
-        border: 1px solid transparent;
-        border-radius: 4px;
-    }
+        .success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+        }
 
-    .success {
-        color: #3c763d;
-        background-color: #dff0d8;
-        border-color: #d6e9c6;
-    }
+        .error {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
 
-    .error {
-        color: #a94442;
-        background-color: #f2dede;
-        border-color: #ebccd1;
-    }
+        .result-container {
+            margin-top: 2rem;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: left;
+        }
 
-    .result-container {
-        margin-top: 2rem;
-        padding: 1rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        text-align: left;
-    }
+        .pdf-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #337ab7;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
 
-    .pdf-link {
-        display: inline-block;
-        margin-top: 10px;
-        padding: 8px 12px;
-        background-color: #337ab7;
-        color: white;
-        text-decoration: none;
-        border-radius: 4px;
-    }
+        .pdf-link:hover {
+            background-color: #286090;
+        }
 
-    .pdf-link:hover {
-        background-color: #286090;
-    }
+        .result-details {
+            margin-top: 15px;
+        }
 
-    .result-details {
-        margin-top: 15px;
-    }
+        .result-details p {
+            margin: 5px 0;
+        }
 
-    .result-details p {
-        margin: 5px 0;
-    }
-</style>
-
+        /* NOVO ESTILO DO LOADING (SEM AFETAR O LAYOUT) */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            margin-top: 15px;
+            font-size: 1.1em;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
+    <!-- CONTEÚDO ORIGINAL (MANTIDO EXATAMENTE IGUAL) -->
     <div class="upload-container">
         <h1>Unlock PDF</h1>
         <p>Envie seu arquivo PDF protegido por senha numérica</p>
         
-        <!-- Mensagens -->
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert {% if message.tags %}{{ message.tags }}{% endif %}">
-            {{ message }}
-        </div>
-    {% endfor %}
-{% endif %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
         
-<form class="upload-form" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; margin-bottom: 20px;">
-        <div class="form-group" style="flex-grow: 1; max-width: calc(70% - 10px);">
-            <label for="{{ form.file.id_for_label }}">Arquivo PDF:</label>
-            {{ form.file }}
-        </div>
-        
-        <div class="form-group" style="width: 120px;">
-            <label for="{{ form.digits.id_for_label }}">Qtd de Dígitos na senha (1-6):</label>
-            {{ form.digits }}
-        </div>
-    </div>
+        <form class="upload-form" method="post" enctype="multipart/form-data" id="pdfForm">
+            {% csrf_token %}
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; margin-bottom: 20px;">
+                <div class="form-group" style="flex-grow: 1; max-width: calc(70% - 10px);">
+                    <label for="{{ form.file.id_for_label }}">Arquivo PDF:</label>
+                    {{ form.file }}
+                </div>
+                
+                <div class="form-group" style="width: 120px;">
+                    <label for="{{ form.digits.id_for_label }}">Qtd de Dígitos (1-6):</label>
+                    {{ form.digits }}
+                </div>
+            </div>
 
-    <button type="submit" class="upload-btn">Enviar PDF</button>
-</form>
+            <button type="submit" class="upload-btn" id="submitBtn">Enviar PDF</button>
+        </form>
         
-        <!-- Resultado -->
         {% if result %}
-        <div class="result-container">
+        <div class="result-container" id="resultContainer">
             <h3>Resultado do Processamento:</h3>
             
             {% if pdf_file.is_success %}
@@ -185,5 +217,27 @@
         </div>
         {% endif %}
     </div>
+
+    <!-- OVERLAY DE LOADING (NOVO) -->
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Processando seu PDF...</div>
+    </div>
+
+    <script>
+        
+        // Script simplificado que não interfere no layout
+        document.getElementById('pdfForm').addEventListener('submit', function() {
+            const overlay = document.getElementById('loading-overlay');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Mostra o loading e desabilita o botão
+            overlay.style.display = 'flex';
+            submitBtn.disabled = true;
+                        
+            // Limpa ao recarregar
+            window.addEventListener('beforeunload', () => clearInterval(interval));
+        });
+    </script>
 </body>
 </html>
